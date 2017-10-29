@@ -19,12 +19,13 @@ class Withings
     weight: Withings::Weight
   }
 
-  attr_reader *MODELS.keys
-
   def initialize(path)
     @path = ::Pathname.new(path)
+
     MODELS.each do |name, model|
-      instance_variable_set("@#{name}", model.new(@path + model::FILENAME))
+      define_singleton_method(name) {
+        instance_variable_get("@#{name}") || instance_variable_set("@#{name}", model.new(@path + model::FILENAME))
+      }
     end
   end
 end
